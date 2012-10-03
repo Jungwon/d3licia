@@ -6,9 +6,17 @@ var d3licia = {
 
 window.d3licia = d3licia;
 
-d3licia.tooltip = {}; // For the tooltip system
+//d3licia.tooltip = {}; // For the tooltip system
 d3licia.utils   = {}; // Utility subsystem
 d3licia.models  = {}; // stores all the possible models/components
-d3licia.charts  = {}; // stores all the ready to use charts
-d3licia.graphs  = []; // stores all the graphs currently on the page
-d3licia.logs    = {}; // stores some statistics and potential error messages
+//d3licia.charts  = {}; // stores all the ready to use charts
+//d3licia.graphs  = []; // stores all the graphs currently on the page
+//d3licia.logs    = {}; // stores some statistics and potential error messages
+
+d3licia.addGraph = function(closure, options) {
+	closure();
+};
+
+window.onresize = function(event) {
+    console.log('resize');
+}

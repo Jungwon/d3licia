@@ -1,6 +1,11 @@
 JS_FILES = \
 	src/intro.js \
 	src/core.js \
+	src/utils.js \
+	src/axis.js \
+	src/line.js \
+	src/legend.js \
+	src/chart.js \
 	src/outro.js
 
 JS_COMPILER = \
