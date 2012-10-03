@@ -10,15 +10,22 @@ window.d3licia = d3licia;
 d3licia.utils   = {}; // Utility subsystem
 d3licia.models  = {}; // stores all the possible models/components
 //d3licia.charts  = {}; // stores all the ready to use charts
-//d3licia.graphs  = []; // stores all the graphs currently on the page
+d3licia.graphs  = []; // stores all the graphs currently on the page
 //d3licia.logs    = {}; // stores some statistics and potential error messages
 
 d3licia.addGraph = function(closure, options) {
-	closure();
+	d3licia.graphs.push(closure);
+	d3licia.render();
 };
 
+d3licia.render = function() {
+	_.each(d3licia.graphs, function(callback) {
+		callback();
+	})
+}
+
 window.onresize = function(event) {
-    console.log('resize');
+    d3licia.render();
 }
 /**
  * Overwrites obj1's values with obj2's and adds obj2's if non existent in obj1
@@ -130,6 +137,10 @@ d3licia.models.chart = function(data, options) {
 	config.h      = config.height - 2 * config.margin; // visu height (global - margins)
 	// ===================================================
 
+	// ===================================================
+	// Reinitialize selector (to avoir multiple charts appended to same selector)
+	d3.select(config.selector).html('');
+	// ===================================================
 
 	// ===================================================
 	// Get min and max values

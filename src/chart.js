@@ -19,6 +19,10 @@ d3licia.models.chart = function(data, options) {
 	config.h      = config.height - 2 * config.margin; // visu height (global - margins)
 	// ===================================================
 
+	// ===================================================
+	// Reinitialize selector (to avoir multiple charts appended to same selector)
+	d3.select(config.selector).html('');
+	// ===================================================
 
 	// ===================================================
 	// Get min and max values

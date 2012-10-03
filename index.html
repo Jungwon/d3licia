@@ -18,7 +18,7 @@
 }
 </style>
 <body>
-	<div id="chart" style="width: 800px; height: 400px; margin: auto;"></div>
+	<div id="chart" style="height: 400px; margin: 100px auto;"></div>
 </body>
 <script>
 	var data = [
@@ -37,7 +37,7 @@
 	};
 
 	d3licia.addGraph(function() {
-		var chart = d3licia.models.chart(data, options);
+		d3licia.models.chart(data, options);
 	});
 	//var chart = new d3liciaChart(data, options);
 </script>
