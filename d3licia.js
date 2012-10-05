@@ -233,7 +233,16 @@ d3licia.models.chart = function(data, options) {
 	_.each(data, function(serie) {
 		switch (serie.type) {
 			case 'bar':
-				// bar
+				vis.selectAll('.bar')
+					.data(serie.values)
+					.enter()
+					.append('svg:rect')
+					.attr('class', 'bar')
+					.attr('x', function(d) { return xScale(d.x); })
+					.attr('y', function(d) { return yScale(d.y); })
+					.attr('width', (config.w / serie.values.length) - 2)
+					.attr('height', function(d) { return config.h - yScale(d.y); })
+					.attr('fill', serie.color)
 			break;
 			case 'line':
 				var line = d3.svg.line()
@@ -241,7 +250,7 @@ d3licia.models.chart = function(data, options) {
 					.y(function(d) { return yScale(d.y); })
 					.interpolate((serie.interpolation !== undefined) ? serie.interpolation : 'linear');
 
-				vis.selectAll('.chart')
+				vis.selectAll('.line')
 					.data([serie.values])
 					.enter()
 					.append('svg:path')
@@ -258,7 +267,7 @@ d3licia.models.chart = function(data, options) {
 					.y1(function(d) { return yScale(d.y); })
 					.interpolate((serie.interpolation !== undefined) ? serie.interpolation : 'linear');
 
-				vis.selectAll('.chart')
+				vis.selectAll('.area')
 					.data([serie.values])
 					.enter()
 					.append('svg:path')
@@ -273,7 +282,7 @@ d3licia.models.chart = function(data, options) {
 					.y(function(d) { return yScale(d.y); })
 					.interpolate((serie.interpolation !== undefined) ? serie.interpolation : 'linear');
 
-				vis.selectAll('.chart')
+				vis.selectAll('.area-stroke')
 					.data([serie.values])
 					.enter()
 					.append('svg:path')
