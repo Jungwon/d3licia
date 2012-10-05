@@ -58,32 +58,46 @@ d3licia.models.axis = function(options) {
 
 	// ===================================================
 	// Format axis values for label if date
-// 	if (config.timestamp) {
-// 		var range = config.scale.domain()[1] - config.scale.domain()[0];
-// 		var pitch = range / config.ticks;
-// 		console.log(pitch);
-// //config.ticks = (d3.time.minutes, 15);
-// 		var formatTime = d3.time.format(config.timeFormat),
-// 		tickFormat = function(d) { return formatTime(new Date(2012, 0, 1, 0, d)); }; // TODO : Check this for other format than minutes
-// 	} else {
-// 		var tickFormat = d3.format(config.tickFormat);
-// 	}
+	if (config.timestamp) {
+		var range = (config.scale.domain()[1] - config.scale.domain()[0]) / config.ticks;
+		if (config.timeFormat) {
+			var formatTime = d3.time.format(config.timeFormat);
+		} else {
+			switch (true) {
+				// range < 1 minute
+				case (range < 1000 * 60) :
+					var formatTime = d3.time.format('%Hh%Mm%S');
+				break;
+				// < 1 day
+				case (range < 1000 * 60 * 60 * 24) :
+					var formatTime = d3.time.format('%Hh%M');
+				break;
+				// < 1 month
+				case (range < 1000 * 60 * 60 * 24 * 31) :
+					var formatTime = d3.time.format('%e / %m');
+				// < 1 year
+				case (range < 1000 * 60 * 60 * 24 * 31 * 12) :
+					var formatTime = d3.time.format('%m / %Y');
+				break;
+				default:
+					var formatTime = d3.time.format('%Y');
+				break;
+			}
+		}
+		var tickFormat = function(d) { return formatTime(new Date(d)); }; // TODO : Check this for other format than minutes
+	} else {
+		var tickFormat = d3.format(config.tickFormat);
+	}
 	// ===================================================
 
 
 	var axis = d3.svg.axis()
 		.scale(config.scale)
 		.orient(config.orient)
-		//.ticks(config.ticks)
-		//.tickFormat(tickFormat);
+		.ticks(config.ticks)
+		.tickFormat(tickFormat);
 
 	return axis;
-
-
-	// Formatters for counts and times (converting numbers to Dates).
-	// var formatCount = d3.format(",.0f"),
-	// 		formatTime = d3.time.format("%H:%M"),
-	// 		formatMinutes = function(d) { return formatTime(new Date(2012, 0, 1, 0, d)); };
 
 };
 
@@ -173,22 +187,13 @@ d3licia.models.chart = function(data, options) {
 
 	// ===================================================
 	// Get x and y scales
-	if (config.timestamp) {
-		var xScale = d3.time.scale()
-			.domain([xMin, xMax])
-			.range([0, config.w])
-			.ticks(d3.time.months, 6);
-	} else {
-		var xScale = d3.scale.linear()
-			.domain([xMin, xMax])
-			.range([0, config.w])
-			//.ticks(config.xticks);
-	}
+	var xScale = d3.scale.linear()
+		.domain([xMin, xMax])
+		.range([0, config.w]);
 
 	var yScale = d3.scale.linear()
 		.domain([yMin, yMax])
-		.range([config.h, 0])
-		//.ticks(config.yticks);
+		.range([config.h, 0]);
 	// ===================================================
 
 	// ===================================================
@@ -196,9 +201,9 @@ d3licia.models.chart = function(data, options) {
 	var xAxis = d3licia.models.axis({
 		scale: xScale,
 		timestamp: config.timestamp,
-		timeFormat: '%H:%M',
 		orient: 'bottom',
-		ticks: config.xticks
+		ticks: config.xticks,
+		timeFormat: (config.timeFormat !== undefined) ? config.timeFormat : null
 	});
 
 	var yAxis = d3licia.models.axis({

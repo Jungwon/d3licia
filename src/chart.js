@@ -49,22 +49,13 @@ d3licia.models.chart = function(data, options) {
 
 	// ===================================================
 	// Get x and y scales
-	if (config.timestamp) {
-		var xScale = d3.time.scale()
-			.domain([xMin, xMax])
-			.range([0, config.w])
-			.ticks(d3.time.months, 6);
-	} else {
-		var xScale = d3.scale.linear()
-			.domain([xMin, xMax])
-			.range([0, config.w])
-			//.ticks(config.xticks);
-	}
+	var xScale = d3.scale.linear()
+		.domain([xMin, xMax])
+		.range([0, config.w]);
 
 	var yScale = d3.scale.linear()
 		.domain([yMin, yMax])
-		.range([config.h, 0])
-		//.ticks(config.yticks);
+		.range([config.h, 0]);
 	// ===================================================
 
 	// ===================================================
@@ -72,9 +63,9 @@ d3licia.models.chart = function(data, options) {
 	var xAxis = d3licia.models.axis({
 		scale: xScale,
 		timestamp: config.timestamp,
-		timeFormat: '%H:%M',
 		orient: 'bottom',
-		ticks: config.xticks
+		ticks: config.xticks,
+		timeFormat: (config.timeFormat !== undefined) ? config.timeFormat : null
 	});
 
 	var yAxis = d3licia.models.axis({
