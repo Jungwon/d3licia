@@ -45,8 +45,7 @@ d3licia.models.axis = function(options) {
 	// Defaults values
 	var defaults = {
 		timestamp: false,
-		tickFormat: ',.0f',
-		timeFormat: ''
+		tickFormat: ',.0f'
 	};
 	// ===================================================
 
@@ -59,25 +58,24 @@ d3licia.models.axis = function(options) {
 
 	// ===================================================
 	// Format axis values for label if date
-	if (config.timestamp) {
-		var test = function(d) {
-			console.log(d);
-		}
-		console.log(config.scale.domain());
-		var formatCount = d3.format(tickFormat),
-			formatTime = d3.time.format(config.timeFormat),
-			tickFormat = function(d) { return formatTime(new Date(2012, 0, 1, 0, d)); }; // TODO : Check this for other format than minutes
-	} else {
-		var tickFormat = d3.format(config.tickFormat);
-	}
+// 	if (config.timestamp) {
+// 		var range = config.scale.domain()[1] - config.scale.domain()[0];
+// 		var pitch = range / config.ticks;
+// 		console.log(pitch);
+// //config.ticks = (d3.time.minutes, 15);
+// 		var formatTime = d3.time.format(config.timeFormat),
+// 		tickFormat = function(d) { return formatTime(new Date(2012, 0, 1, 0, d)); }; // TODO : Check this for other format than minutes
+// 	} else {
+// 		var tickFormat = d3.format(config.tickFormat);
+// 	}
 	// ===================================================
 
 
 	var axis = d3.svg.axis()
 		.scale(config.scale)
 		.orient(config.orient)
-		.ticks(10)
-		.tickFormat(tickFormat);
+		//.ticks(config.ticks)
+		//.tickFormat(tickFormat);
 
 	return axis;
 
@@ -132,7 +130,9 @@ d3licia.models.chart = function(data, options) {
 	var defaults = {
 		selector: '#graph',
 		margin: 20,
-		timestamp: false
+		timestamp: false,
+		xticks: 10,
+		yticks: 10
 	};
 	// ===================================================
 
@@ -168,18 +168,27 @@ d3licia.models.chart = function(data, options) {
 		var y_max = d3.max(serie.values, function(d) { return d.y; });
 		yMin = (yMin === null || yMin > y_min) ? y_min : yMin;
 		yMax = (yMin === null || yMax < y_max) ? y_max : yMax;
-	});
+	})
 	// ===================================================
 
 	// ===================================================
 	// Get x and y scales
-	var xScale = d3.scale.linear()
-		.domain([xMin, xMax])
-		.range([0, config.w]);
+	if (config.timestamp) {
+		var xScale = d3.time.scale()
+			.domain([xMin, xMax])
+			.range([0, config.w])
+			.ticks(d3.time.months, 6);
+	} else {
+		var xScale = d3.scale.linear()
+			.domain([xMin, xMax])
+			.range([0, config.w])
+			//.ticks(config.xticks);
+	}
 
 	var yScale = d3.scale.linear()
 		.domain([yMin, yMax])
-		.range([config.h, 0]);
+		.range([config.h, 0])
+		//.ticks(config.yticks);
 	// ===================================================
 
 	// ===================================================
@@ -188,12 +197,14 @@ d3licia.models.chart = function(data, options) {
 		scale: xScale,
 		timestamp: config.timestamp,
 		timeFormat: '%H:%M',
-		orient: 'bottom'
+		orient: 'bottom',
+		ticks: config.xticks
 	});
 
 	var yAxis = d3licia.models.axis({
 		scale: yScale,
-		orient: 'left'
+		orient: 'left',
+		ticks: config.yticks
 	});
 	// ===================================================
 
@@ -232,7 +243,7 @@ d3licia.models.chart = function(data, options) {
 					.attr('fill', 'none')
 					.attr('stroke-width', '2')
 					.attr('stroke', serie.color);
-	    break;
+		break;
 		}
 	})
 };
