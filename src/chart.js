@@ -95,21 +95,56 @@ d3licia.models.chart = function(data, options) {
 	_.each(data, function(serie) {
 		switch (serie.type) {
 			case 'bar':
+				// bar
 			break;
 			case 'line':
 				var line = d3.svg.line()
-					.x(function(d) {return xScale(d.x);})
-					.y(function(d) { return yScale(d.y);})
+					.x(function(d) { return xScale(d.x); })
+					.y(function(d) { return yScale(d.y); })
 					.interpolate((serie.interpolation !== undefined) ? serie.interpolation : 'linear');
 
 				vis.selectAll('.chart')
 					.data([serie.values])
 					.enter()
-					.append("svg:path")
-					.attr("d", line)
+					.append('svg:path')
+					.attr('d', line)
 					.attr('fill', 'none')
 					.attr('stroke-width', '2')
 					.attr('stroke', serie.color);
+		break;
+		case 'area':
+				// area
+				var area = d3.svg.area()
+					.x(function(d) { return xScale(d.x); })
+					.y0(function(d) { return config.h; })
+					.y1(function(d) { return yScale(d.y); })
+					.interpolate((serie.interpolation !== undefined) ? serie.interpolation : 'linear');
+
+				vis.selectAll('.chart')
+					.data([serie.values])
+					.enter()
+					.append('svg:path')
+					.attr('class', 'area')
+					.attr('d', area)
+					.attr('fill', serie.color)
+					.attr('opacity', (serie.opacity !== undefined) ? serie.opacity : 0.8)
+
+				// stroke
+				var stroke = d3.svg.line()
+					.x(function(d) { return xScale(d.x); })
+					.y(function(d) { return yScale(d.y); })
+					.interpolate((serie.interpolation !== undefined) ? serie.interpolation : 'linear');
+
+				vis.selectAll('.chart')
+					.data([serie.values])
+					.enter()
+					.append('svg:path')
+					.attr('d', stroke)
+					.attr('fill', 'none')
+					.attr('stroke-width', '1')
+					.attr('opacity', 1)
+					.attr('stroke', serie.color);
+
 		break;
 		}
 	})
