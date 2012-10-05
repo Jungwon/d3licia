@@ -44,7 +44,7 @@ d3licia.models.chart = function(data, options) {
 		var y_max = d3.max(serie.values, function(d) { return d.y; });
 		yMin = (yMin === null || yMin > y_min) ? y_min : yMin;
 		yMax = (yMin === null || yMax < y_max) ? y_max : yMax;
-	})
+	});
 	// ===================================================
 
 	// ===================================================
@@ -105,6 +105,7 @@ d3licia.models.chart = function(data, options) {
 					.attr('width', (config.w / serie.values.length) - 2)
 					.attr('height', function(d) { return config.h - yScale(d.y); })
 					.attr('fill', serie.color)
+					.attr('opacity', serie.opacity);
 			break;
 			case 'line':
 				var line = d3.svg.line()
@@ -136,7 +137,7 @@ d3licia.models.chart = function(data, options) {
 					.attr('class', 'area')
 					.attr('d', area)
 					.attr('fill', serie.color)
-					.attr('opacity', (serie.opacity !== undefined) ? serie.opacity : 0.8)
+					.attr('opacity', (serie.opacity !== undefined) ? serie.opacity : 0.8);
 
 				// stroke
 				var stroke = d3.svg.line()
