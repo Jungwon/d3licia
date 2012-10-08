@@ -95,6 +95,7 @@ d3licia.models.chart = function(data, options) {
 	_.each(data, function(serie) {
 		switch (serie.type) {
 			case 'bar':
+				serie.values.splice((serie.values.length - 1), 1);
 				vis.selectAll('.bar')
 					.data(serie.values)
 					.enter()
@@ -102,7 +103,7 @@ d3licia.models.chart = function(data, options) {
 					.attr('class', 'bar')
 					.attr('x', function(d) { return xScale(d.x); })
 					.attr('y', function(d) { return yScale(d.y); })
-					.attr('width', (config.w / serie.values.length) - 2)
+					.attr('width', ((((config.w / serie.values.length) - 2) > 1) ? (config.w / serie.values.length) - 2 : 1))
 					.attr('height', function(d) { return config.h - yScale(d.y); })
 					.attr('fill', serie.color)
 					.attr('opacity', serie.opacity);
@@ -154,7 +155,6 @@ d3licia.models.chart = function(data, options) {
 					.attr('stroke-width', '1')
 					.attr('opacity', 1)
 					.attr('stroke', serie.color);
-
 		break;
 		}
 	})
