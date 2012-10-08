@@ -233,7 +233,6 @@ d3licia.models.chart = function(data, options) {
 	_.each(data, function(serie) {
 		switch (serie.type) {
 			case 'bar':
-				serie.values.splice((serie.values.length - 1), 1);
 				vis.selectAll('.bar')
 					.data(serie.values)
 					.enter()
