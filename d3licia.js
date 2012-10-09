@@ -45,7 +45,8 @@ d3licia.models.axis = function(options) {
 	// Defaults values
 	var defaults = {
 		timestamp: false,
-		tickFormat: ',.0f'
+		tickFormat: ',.0f',
+		transform: ''
 	};
 	// ===================================================
 
@@ -96,6 +97,19 @@ d3licia.models.axis = function(options) {
 		.orient(config.orient)
 		.ticks(config.ticks)
 		.tickFormat(tickFormat);
+
+	// append axis
+	config.vis
+		.append('g')
+		.attr('class', 'axis')
+		.attr('transform', config.transform)
+		.call(axis);
+
+
+	// append axis legend
+	config.vis
+		.append('svg:text')
+		.text(config.x)
 
 	return axis;
 
@@ -196,6 +210,22 @@ d3licia.models.chart = function(data, options) {
 		.range([config.h, 0]);
 	// ===================================================
 
+	// legend container
+	var legend = d3.select(config.selector)
+		.append('svg:svg')
+		.attr('class', 'legend')
+		.style('height', '30px')
+		.style('width', config.width);
+
+	// chart container
+	var vis = d3.select(config.selector)
+		.append('svg:svg')
+		.attr('width', config.width)
+		.attr('height', config.height)
+		.append('svg:g')
+		.attr('class', 'visu')
+		.attr('transform', 'translate('+config.margin+','+config.margin+')');
+
 	// ===================================================
 	// Init lines and axis
 	var xAxis = d3licia.models.axis({
@@ -203,55 +233,29 @@ d3licia.models.chart = function(data, options) {
 		timestamp: config.timestamp,
 		orient: 'bottom',
 		ticks: config.xticks,
-		timeFormat: (config.timeFormat !== undefined) ? config.timeFormat : null
+		timeFormat: (config.timeFormat !== undefined) ? config.timeFormat : null,
+		vis: vis,
+		transform: 'translate(0, '+config.h+')'
 	});
 
 	var yAxis = d3licia.models.axis({
 		scale: yScale,
 		orient: 'left',
-		ticks: config.yticks
+		ticks: config.yticks,
+		vis: vis
 	});
 	// ===================================================
 
-
-	var vis = d3.select(config.selector)
-		.append('svg:svg')
-		.attr('width', config.width)
-		.attr('height', config.height)
-		.append('svg:g')
-		.attr('transform', 'translate('+config.margin+','+config.margin+')');
-
-	vis.append('g')
-		.attr('class', 'axis')
-		.attr('transform', 'translate(0, '+config.h+')')
-		.call(xAxis);
-
-	vis.append('g')
-		.attr('class', 'axis')
-		.call(yAxis);
-
-	_.each(data, function(serie) {
+	var stockCharts = [];
+	_.each(data, function(serie, key) {
 		switch (serie.type) {
-			case 'bar':
-				vis.selectAll('.bar')
-					.data(serie.values)
-					.enter()
-					.append('svg:rect')
-					.attr('class', 'bar')
-					.attr('x', function(d) { return xScale(d.x); })
-					.attr('y', function(d) { return yScale(d.y); })
-					.attr('width', (config.w / serie.values.length) - 2)
-					.attr('height', function(d) { return config.h - yScale(d.y); })
-					.attr('fill', serie.color)
-					.attr('opacity', serie.opacity);
-			break;
 			case 'line':
 				var line = d3.svg.line()
 					.x(function(d) { return xScale(d.x); })
 					.y(function(d) { return yScale(d.y); })
 					.interpolate((serie.interpolation !== undefined) ? serie.interpolation : 'linear');
 
-				vis.selectAll('.line')
+				vis.selectAll('.line_'+key)
 					.data([serie.values])
 					.enter()
 					.append('svg:path')
@@ -268,7 +272,7 @@ d3licia.models.chart = function(data, options) {
 					.y1(function(d) { return yScale(d.y); })
 					.interpolate((serie.interpolation !== undefined) ? serie.interpolation : 'linear');
 
-				vis.selectAll('.area')
+				vis.selectAll('.area_'+key)
 					.data([serie.values])
 					.enter()
 					.append('svg:path')
@@ -293,9 +297,49 @@ d3licia.models.chart = function(data, options) {
 					.attr('opacity', 1)
 					.attr('stroke', serie.color);
 
+				// legend
+				d3.select('.legend')
+					.append('svg:circle')
+					.attr('r', 5)
+					.attr('cx', config.margin + 10 + key * 90)
+					.attr('cy', 15)
+					.attr('fill', serie.color)
+
+				// legend text
+				d3.select('.legend')
+					.append('svg:text')
+					.attr('x', config.margin + 10 + key * 90 + 9)
+					.attr('y', 20)
+					.attr('fill', '#666666')
+					.text(serie.key)
+					.style('font-size', '16px')
 		break;
 		}
 	})
+
+	// var lineCursor = vis.append('svg:line')
+	// 	.attr('x1', 0)
+	// 	.attr('y1', 0)
+	// 	.attr('x2', 0)
+	// 	.attr('y2', 0)
+	// 	.attr('style', 'z-index: 10')
+
+	// d3.select('svg')
+	// 	.on('mousemove', function() {
+	// 		var coords = d3.mouse(document.getElementsByClassName('visu')[0]);
+	// 		if (coords[0] > 0 && coords[1] > 0 && coords[0] < config.w && coords[1] < config.h) {
+	// 			lineCursor.attr('x1', coords[0])
+	// 				.attr('y1', 0)
+	// 				.attr('x2', coords[0])
+	// 				.attr('y2', config.h)
+	// 				.attr('style', 'stroke:rgb(100,100,100);stroke-width: 1;');
+	// 		} else {
+	// 			lineCursor.attr('x1', 0)
+	// 				.attr('y1', 0)
+	// 				.attr('x2', 0)
+	// 				.attr('y2', 0)
+	// 			}
+	// 	})
 };
 
 })();

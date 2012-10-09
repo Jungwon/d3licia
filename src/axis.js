@@ -4,7 +4,8 @@ d3licia.models.axis = function(options) {
 	// Defaults values
 	var defaults = {
 		timestamp: false,
-		tickFormat: ',.0f'
+		tickFormat: ',.0f',
+		transform: ''
 	};
 	// ===================================================
 
@@ -55,6 +56,19 @@ d3licia.models.axis = function(options) {
 		.orient(config.orient)
 		.ticks(config.ticks)
 		.tickFormat(tickFormat);
+
+	// append axis
+	config.vis
+		.append('g')
+		.attr('class', 'axis')
+		.attr('transform', config.transform)
+		.call(axis);
+
+
+	// append axis legend
+	config.vis
+		.append('svg:text')
+		.text(config.x)
 
 	return axis;
 
