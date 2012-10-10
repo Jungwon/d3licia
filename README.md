@@ -56,7 +56,8 @@ var options = {
 		timestamp: true,
 		xticks: 10,
 		yticks: 10,
-		timeFormat: '%Y'
+		timeFormat: '%Y',
+		margin: 20
 	};
 ```
 
@@ -64,4 +65,5 @@ var options = {
 * timestamp (optionnal, default false) is set to true when x axis values are timestamps. This will transform timestamps to corresponding dates for x labels
 * xticks (optionnal, default 10) is the number of x ticks you want to show
 * yticks (optionnal, default 10) idem for y axis
+* margin (optionnal, default 20) is the margin size on sides of chart. In this margin will be shown axis and axis labels
 * timeFromat (optionnal) is the format to show timestamp dates (see d3 format for more informations)
