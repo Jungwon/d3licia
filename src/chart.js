@@ -94,7 +94,8 @@ d3licia.models.chart = function(data, options) {
 	});
 	// ===================================================
 
-	var stockCharts = [];
+	var stockCharts    = [];
+	var legend_padding = config.margin + 10;
 	_.each(data, function(serie, key) {
 		switch (serie.type) {
 			case 'line':
@@ -111,6 +112,28 @@ d3licia.models.chart = function(data, options) {
 					.attr('fill', 'none')
 					.attr('stroke-width', '2')
 					.attr('stroke', serie.color);
+
+				// legend
+				var g = d3.select('.legend')
+					.append('g')
+
+				g.append('svg:line')
+					.attr('x1', legend_padding - 5)
+					.attr('y1', 15)
+					.attr('x2', legend_padding + 5)
+					.attr('y2', 15)
+					.attr('stroke', serie.color)
+					.attr('stroke-width', 3)
+
+				// legend text
+				g.append('svg:text')
+					.attr('x', legend_padding + 9)
+					.attr('y', 20)
+					.attr('fill', '#666666')
+					.text(serie.key)
+					.style('font-size', '15px')
+
+				legend_padding += g[0][0].getBoundingClientRect().width + 20;
 		break;
 		case 'area':
 				// area
@@ -146,21 +169,24 @@ d3licia.models.chart = function(data, options) {
 					.attr('stroke', serie.color);
 
 				// legend
-				d3.select('.legend')
-					.append('svg:circle')
+				var g = d3.select('.legend')
+					.append('g')
+
+				g.append('svg:circle')
 					.attr('r', 5)
 					.attr('cx', config.margin + 10 + key * 90)
 					.attr('cy', 15)
 					.attr('fill', serie.color)
 
 				// legend text
-				d3.select('.legend')
-					.append('svg:text')
+				g.append('svg:text')
 					.attr('x', config.margin + 10 + key * 90 + 9)
 					.attr('y', 20)
 					.attr('fill', '#666666')
 					.text(serie.key)
-					.style('font-size', '16px')
+					.style('font-size', '15px')
+
+					legend_padding += g[0][0].getBoundingClientRect().width + 20;
 		break;
 		}
 	})
